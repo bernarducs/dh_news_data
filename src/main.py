@@ -1,8 +1,8 @@
-import re
 import json
+import re
 
-import requests
 import bs4
+import requests
 from bs4 import BeautifulSoup
 
 
@@ -18,7 +18,7 @@ def get_pages(response: requests.models.Response) -> list:
 
     soup = BeautifulSoup(response.text, 'html.parser')
     contents = soup.find_all('div', {'class': 'space-y-3'})
-    
+
     for content in contents:
         route = content.find('a').get('href')
         yield PREFIX + route + POSFIX
@@ -26,7 +26,7 @@ def get_pages(response: requests.models.Response) -> list:
 
 def get_page_data(response: requests.models.Response) -> dict:
     page_data = response.json()
-    
+
     post = {
         'id': page_data['post']['id'],
         'title': page_data['post']['web_title'],
@@ -53,12 +53,9 @@ def parse_html(page_data: dict) -> list:
             if content.text != '':
                 txt_content = content.text
                 links = parse_links(content.find_all('a'))
-            
-                blocks.append({
-                    'text': txt_content,
-                    'links': links
-                })
-    
+
+                blocks.append({'text': txt_content, 'links': links})
+
     return blocks
 
 
@@ -77,12 +74,12 @@ def parse_links(a_tags_content: bs4.element.Tag) -> list:
                 links.append(re.findall(pattern, href_tag)[0])
             else:
                 links.append(href_tag)
-    
+
     return links
 
 
 if __name__ == '__main__':
-    for page_n in list(range(1,33)):
+    for page_n in list(range(1, 33)):
         print(f'Página {page_n}.')
 
         url = f'https://www.datahackers.news/archive?page={page_n}'
